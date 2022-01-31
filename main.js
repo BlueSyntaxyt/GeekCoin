@@ -1,9 +1,21 @@
 const { createHash } = require("crypto");
 //const blockStructure = require("./blockStructure");
 const fs = require("fs");
-const fsPath = require("./backup.json")
+const fsPath = "./backup.json";
 class block {
-  constructor(index, hash, previous_hash, eq, timestamp, owner, eqa, valid) {
+  constructor(
+    index,
+    hash,
+    previous_hash,
+    eq,
+    timestamp,
+    owner,
+    eqa,
+    valid,
+    type,
+    metadata
+  ) {
+    //Types: NFT, Balance, Transaction ** Metadata: file, amount, {sender,reciever,amount}
     this.index = index;
     this.hash = hash;
     this.previous_hash = previous_hash.toString();
@@ -12,6 +24,8 @@ class block {
     this.owner = owner;
     this.EquationFinished = eqa;
     this.valid = valid;
+    this.type = type;
+    this.metadata = metadata;
   }
 }
 
@@ -20,12 +34,24 @@ function hash(string) {
 }
 
 var getGenesisBlock = () => {
-  return new block(0, hash("Genesis"), "0", "1+1", 69, "Chain", 2, true);
+  return new block(
+    0,
+    hash("Genesis"),
+    "0",
+    "1+1",
+    69,
+    "Chain",
+    2,
+    true,
+    "genesis",
+    "Genesis block"
+  );
 };
 function random_eq() {
   var tokens_alg = ["*", "+", "-", "/", "^", "+Math.sqrt(", ")"];
 
   var n = Math.floor(Math.random() * 25);
+  n += Math.floor(Math.random() * 25);
 
   var equationString = Math.random().toString();
   for (let index = 0; index < n; index++) {
@@ -41,7 +67,7 @@ function random_eq() {
   }
   return equationString;
 }
-async function sendBlock(walletLocation, count, data) {
+async function sendBlock(walletLocation, count, data, type, metadata) {
   for (let index = 0; index < count; index++) {
     var e = random_eq();
     blockchain.push(
@@ -57,15 +83,25 @@ async function sendBlock(walletLocation, count, data) {
         0,
         walletLocation,
         eval(e),
-        false
+        false,
+        type,
+        metadata
       )
     );
   }
-  //fs.writeFileSync(fsPath, JSON.stringify(blockchain));
+  try {
+    fs.writeFileSync(fsPath, JSON.stringify(blockchain));
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 var blockchain = [getGenesisBlock()];
-
+try {
+  blockchain = fs.readFileSync(fsPath, 'utf8');
+} catch (err) {
+  console.error(err);
+}
 
 async function validateBlock(blockIndex, answer, eqa, walletLocation) {
   if (blockchain[blockIndex].valid == false) {
@@ -82,10 +118,13 @@ async function validateBlock(blockIndex, answer, eqa, walletLocation) {
               blockchain[blockIndex + 1].previous_hash ==
               blockchain[blockIndex].hash
             ) {
-              sendBlock(walletLocation, 500);
+              sendBlock(walletLocation, 1, "Block reward", "Transaction", JSON.stringify({sender:"Chain",reciever: walletLocation, amount: 500}));
               return "validated block";
             }
-            sendBlock(walletLocation, 500);
+            sendBlock(walletLocation, 1, "Block reward", "Transaction", JSON.stringify({sender:"Chain",reciever: walletLocation, amount: 500}));
+            return "validated block";
+          } else {
+            sendBlock(walletLocation, 1, "Block reward", "Transaction", JSON.stringify({sender:"Chain",reciever: walletLocation, amount: 500}));
             return "validated block";
           }
         } else {
@@ -93,6 +132,11 @@ async function validateBlock(blockIndex, answer, eqa, walletLocation) {
         }
       }
     }
+  }
+  try {
+    fs.writeFileSync(fsPath, JSON.stringify(blockchain));
+  } catch (err) {
+    console.error(err);
   }
 }
 
@@ -128,22 +172,22 @@ app.post("/sendValidation", (req, res) => {
 app.get("/", (req, res) => {
   res.send("Running chain, size: " + JSON.stringify(blockchain));
 });
-app.get("/addBlock", (req,res) => {
-  sendBlock("Chain", 1, "test block deployed on the chain");
+app.get("/addBlock", (req, res) => {
+  sendBlock("Chain", 1, "test block deployed on the chain", "test block", "TEST");
   res.send("Block deployed");
-})
+});
 app.get("/getValidation", async (req, res) => {
   var alreadySent = false;
-  blockchain.forEach(element => {
-    if(alreadySent == false) {
-      if(element.valid == true) {
+  blockchain.forEach((element) => {
+    if (alreadySent == false) {
+      if (element.valid == true) {
         return;
       } else {
-        res.send(JSON.stringify({ i: element.index, eq: element.eq}));
+        res.send(JSON.stringify({ i: element.index, eq: element.eq }));
         alreadySent = true;
       }
     }
-    if(alreadySent == false) {
+    if (alreadySent == false) {
       res.send("No new blocks currently");
     }
   });
