@@ -1,50 +1,40 @@
-[
-  {
-    "index": 0,
-    "hash": "81ddc8d248b2dccdd3fdd5e84f0cad62b08f2d10b57f9a831c13451e5c5c80a5",
-    "previous_hash": "0",
-    "eq": "1+1",
-    "timestamp": "69",
-    "owner": "Chain",
-    "EquationFinished": 2,
-    "valid": true,
-    "type": "genesis",
-    "metadata": "Genesis block"
-  },
-  {
-    "index": 1,
-    "hash": "3325d053cb250363feebfd0f589ad2659d32b342cdd57158b67c61dd62a189cf",
-    "previous_hash": "81ddc8d248b2dccdd3fdd5e84f0cad62b08f2d10b57f9a831c13451e5c5c80a5",
-    "eq": "0.8628600363196657+4655*8486/5639+Math.sqrt(7435)^720-7230+5707+3032+Math.sqrt(2256)+Math.sqrt(1958)/5427^3917*8788+2289*105*1596",
-    "timestamp": "0",
-    "owner": "Chain",
-    "EquationFinished": 418018160,
-    "valid": false,
-    "type": "test",
-    "metadata": "TEST"
-  },
-  {
-    "index": 2,
-    "hash": "cd5352a3e997c3484a15a737f2aba9b9aacaee6934b4dd8ec936c42ff16a3037",
-    "previous_hash": "3325d053cb250363feebfd0f589ad2659d32b342cdd57158b67c61dd62a189cf",
-    "eq": "0.4146823588911672-563/8449*9961^5241+Math.sqrt(7215)^8845/9388+Math.sqrt(5074)+Math.sqrt(6075)/6452+Math.sqrt(3160)+Math.sqrt(9079)/7707-4540/9727^4719*2599+Math.sqrt(6729)-3011",
-    "timestamp": "0",
-    "owner": "Chain",
-    "EquationFinished": -12259165,
-    "valid": false,
-    "type": "test",
-    "metadata": "TEST"
-  },
-  {
-    "index": 2,
-    "hash": "cd5352a3e997c3484a15a737f2aba9b9aacaee6934b4dd8ec936c42ff16a3037",
-    "previous_hash": "3325d053cb250363feebfd0f589ad2659d32b342cdd57158b67c61dd62a189cf",
-    "eq": "0.4146823588911672-563/8449*9961^5241+Math.sqrt(7215)^8845/9388+Math.sqrt(5074)+Math.sqrt(6075)/6452+Math.sqrt(3160)+Math.sqrt(9079)/7707-4540/9727^4719*2599+Math.sqrt(6729)-3011",
-    "timestamp": "0",
-    "owner": "Chain",
-    "EquationFinished": -12259165,
-    "valid": false,
-    "type": "NFT",
-    "metadata": "https://c402277.ssl.cf1.rackcdn.com/photos/20852/images/magazine_medium/axolotl_WWsummer2021.jpg?1618758847"
-  }
-]
+{
+  "chain_": [
+    {
+      "index": 0,
+      "hash": "81ddc8d248b2dccdd3fdd5e84f0cad62b08f2d10b57f9a831c13451e5c5c80a5",
+      "previous_hash": "0",
+      "eq": "1+1",
+      "timestamp": 69,
+      "owner": "Chain",
+      "EquationFinished": 2,
+      "valid": true,
+      "type": "genesis",
+      "metadata": "Genesis block"
+    },
+    {
+      "index": 1,
+      "hash": "3325d053cb250363feebfd0f589ad2659d32b342cdd57158b67c61dd62a189cf",
+      "previous_hash": "81ddc8d248b2dccdd3fdd5e84f0cad62b08f2d10b57f9a831c13451e5c5c80a5",
+      "eq": "0.5946388928896993/3493+Math.sqrt(6868)*1172*9175-296/8454*9829*9637+1082/5067/4375",
+      "timestamp": 0,
+      "owner": "c86fe2bcb297ebe170b5163443838e6848ee986e3f45df2e8b8790596b27ca36",
+      "EquationFinished": 887829424.7615695,
+      "valid": false,
+      "type": "Account creation",
+      "metadata": 100
+    },
+    {
+      "index": 2,
+      "hash": "cd5352a3e997c3484a15a737f2aba9b9aacaee6934b4dd8ec936c42ff16a3037",
+      "previous_hash": "3325d053cb250363feebfd0f589ad2659d32b342cdd57158b67c61dd62a189cf",
+      "eq": "0.6493270717072082*5226-1586+Math.sqrt(374)+2071+7921-5574-6031^8056-8971*4739/7478^3128*3161-3892-6388+1937*3667/1933-1306-2708+4509/1615+Math.sqrt(1663)-198+4993",
+      "timestamp": 0,
+      "owner": "babd6736192360b0e254b13f0eb5da9a9e17ed31bccf54b38ae8132d0515f43a",
+      "EquationFinished": 9879924,
+      "valid": false,
+      "type": "Account creation",
+      "metadata": 1000000000000
+    }
+  ]
+}

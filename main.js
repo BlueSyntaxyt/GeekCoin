@@ -18,9 +18,9 @@ class block {
     //Types: NFT, Balance, Transaction ** Metadata: file, amount, {sender,reciever,amount}
     this.index = index;
     this.hash = hash;
-    this.previous_hash = previous_hash.toString();
+    this.previous_hash = previous_hash;
     this.eq = eq;
-    this.timestamp = timestamp.toString();
+    this.timestamp = timestamp;
     this.owner = owner;
     this.EquationFinished = eqa;
     this.valid = valid;
@@ -68,8 +68,10 @@ function random_eq() {
   return equationString;
 }
 async function sendBlock(walletLocation, count, data, type, metadata) {
+  console.log("Creating block " + walletLocation);
   for (let index = 0; index < count; index++) {
     var e = random_eq();
+    console.log(blockchain);
     blockchain.push(
       new block(
         blockchain.length,
@@ -90,7 +92,8 @@ async function sendBlock(walletLocation, count, data, type, metadata) {
     );
   }
   try {
-    fs.writeFileSync(fsPath, JSON.stringify(blockchain));
+    var to = {chain_:blockchain};
+    fs.writeFileSync(fsPath, JSON.stringify(to));
   } catch (err) {
     console.error(err);
   }
@@ -98,7 +101,11 @@ async function sendBlock(walletLocation, count, data, type, metadata) {
 
 var blockchain = [getGenesisBlock()];
 try {
-  blockchain = fs.readFileSync(fsPath, 'utf8');
+  var tbc = fs.readFileSync(fsPath);
+  var ttbc = JSON.parse(tbc);
+  if(ttbc.chain_ != null) {
+    blockchain = ttbc.chain_;
+  }
 } catch (err) {
   console.error(err);
 }
@@ -134,7 +141,8 @@ async function validateBlock(blockIndex, answer, eqa, walletLocation) {
     }
   }
   try {
-    fs.writeFileSync(fsPath, JSON.stringify(blockchain));
+    var to = {chain_:blockchain};
+    fs.writeFileSync(fsPath, JSON.stringify(to));
   } catch (err) {
     console.error(err);
   }
@@ -147,7 +155,7 @@ app.use(express.json());
 
 app.use(cors());
 
-app.listen(3000, () => console.log("Listening on port 3000"));
+app.listen(3002, () => console.log("Listening on port 3002"));
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -158,7 +166,36 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Methods", "POST, GET");
   next();
 });
-
+app.post("/addAC", async (req, res) => {
+  console.log(req.body);
+  var ah = req.body.adress;
+  await sendBlock(ah, 1, "Account", "Account creation", 0);
+  res.json({status: "AC created"});
+});
+app.post("/getB", (req,res) => {
+  console.log(blockchain);
+  var semiChain = [];
+  blockchain.forEach(e=> {
+    if (e.type == "Account creation") {
+      semiChain.push(e);
+    }
+  })
+  console.log(req.body.adress);
+  var bal = semiChain.find( ({ owner }) => owner == req.body.adress );
+  var NFTChain = [];
+  blockchain.forEach(e => {
+    if (e.type == "NFT") {
+      if(e.owner === req.body.address){
+        NFTChain.push(e);
+      }
+    }
+  })
+  if(bal == null) {
+    res.json({num: null, NFTS: null})
+  } else {
+    res.json({num: bal.metadata, NFTS: NFTChain})
+  }
+})
 app.post("/sendValidation", (req, res) => {
   var address_req = req.body.address;
   var equation_req = req.body.eq;
