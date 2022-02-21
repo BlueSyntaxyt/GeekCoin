@@ -92,7 +92,7 @@ async function sendBlock(walletLocation, count, data, type, metadata) {
     );
   }
   try {
-    var to = {chain_:blockchain};
+    var to = { chain_: blockchain };
     fs.writeFileSync(fsPath, JSON.stringify(to));
   } catch (err) {
     console.error(err);
@@ -103,7 +103,7 @@ var blockchain = [getGenesisBlock()];
 try {
   var tbc = fs.readFileSync(fsPath);
   var ttbc = JSON.parse(tbc);
-  if(ttbc.chain_ != null) {
+  if (ttbc.chain_ != null) {
     blockchain = ttbc.chain_;
   }
 } catch (err) {
@@ -125,13 +125,43 @@ async function validateBlock(blockIndex, answer, eqa, walletLocation) {
               blockchain[blockIndex + 1].previous_hash ==
               blockchain[blockIndex].hash
             ) {
-              sendBlock(walletLocation, 1, "Block reward", "Transaction", JSON.stringify({sender:"Chain",reciever: walletLocation, amount: 500}));
+              sendBlock(
+                walletLocation,
+                1,
+                "Block reward",
+                "Transaction",
+                JSON.stringify({
+                  sender: "Chain",
+                  reciever: walletLocation,
+                  amount: 500,
+                })
+              );
               return "validated block";
             }
-            sendBlock(walletLocation, 1, "Block reward", "Transaction", JSON.stringify({sender:"Chain",reciever: walletLocation, amount: 500}));
+            sendBlock(
+              walletLocation,
+              1,
+              "Block reward",
+              "Transaction",
+              JSON.stringify({
+                sender: "Chain",
+                reciever: walletLocation,
+                amount: 500,
+              })
+            );
             return "validated block";
           } else {
-            sendBlock(walletLocation, 1, "Block reward", "Transaction", JSON.stringify({sender:"Chain",reciever: walletLocation, amount: 500}));
+            sendBlock(
+              walletLocation,
+              1,
+              "Block reward",
+              "Transaction",
+              JSON.stringify({
+                sender: "Chain",
+                reciever: walletLocation,
+                amount: 500,
+              })
+            );
             return "validated block";
           }
         } else {
@@ -141,7 +171,7 @@ async function validateBlock(blockIndex, answer, eqa, walletLocation) {
     }
   }
   try {
-    var to = {chain_:blockchain};
+    var to = { chain_: blockchain };
     fs.writeFileSync(fsPath, JSON.stringify(to));
   } catch (err) {
     console.error(err);
@@ -170,32 +200,65 @@ app.post("/addAC", async (req, res) => {
   console.log(req.body);
   var ah = req.body.adress;
   await sendBlock(ah, 1, "Account", "Account creation", 0);
-  res.json({status: "AC created"});
+  res.json({ status: "AC created" });
 });
-app.post("/getB", (req,res) => {
-  console.log(blockchain);
+app.post("/transfer", (req, res) => {
+  var amount = req.body.a;
+  var senderPW = req.body.sPW;
+  var recieverPW = req.body.rPW;
+  var senderEmail = req.body.sEmail;
+  var recieverEmail = req.body.rEmail;
+  var sAdress = hash(senderEmail + senderPW);
+  var rAdress = hash(recieverEmail + recieverPW);
   var semiChain = [];
-  blockchain.forEach(e=> {
+  blockchain.forEach((e) => {
     if (e.type == "Account creation") {
       semiChain.push(e);
     }
-  })
+  });
+  var sender = semiChain.find(({ owner }) => owner == sAdress);
+  var semiChain2 = [];
+  blockchain.forEach((e) => {
+    if (e.type == "Account creation") {
+      semiChain2.push(e);
+    }
+  });
+  var reciever = semiChain.find(({ owner }) => owner == rAdress);
+  if (sender.metadata >= amount) {
+    sender.metadata -= amount;
+    reciever.metadata += amount;
+    res.json({ status: "Succes" });
+  } else {
+    res.json({
+      status: "Failed",
+      msg: "The sender does not have to the requested amount of coins.",
+    });
+  }
+});
+app.post("/getB", (req, res) => {
+  console.log(blockchain);
+  var semiChain = [];
+  blockchain.forEach((e) => {
+    if (e.type == "Account creation") {
+      semiChain.push(e);
+    }
+  });
   console.log(req.body.adress);
-  var bal = semiChain.find( ({ owner }) => owner == req.body.adress );
+  var bal = semiChain.find(({ owner }) => owner == req.body.adress);
   var NFTChain = [];
-  blockchain.forEach(e => {
+  blockchain.forEach((e) => {
     if (e.type == "NFT") {
-      if(e.owner === req.body.address){
+      if (e.owner === req.body.address) {
         NFTChain.push(e);
       }
     }
-  })
-  if(bal == null) {
-    res.json({num: null, NFTS: null})
+  });
+  if (bal == null) {
+    res.json({ num: null, NFTS: null });
   } else {
-    res.json({num: bal.metadata, NFTS: NFTChain})
+    res.json({ num: bal.metadata, NFTS: NFTChain });
   }
-})
+});
 app.post("/sendValidation", (req, res) => {
   var address_req = req.body.address;
   var equation_req = req.body.eq;
@@ -210,7 +273,13 @@ app.get("/", (req, res) => {
   res.send("Running chain, size: " + JSON.stringify(blockchain));
 });
 app.get("/addBlock", (req, res) => {
-  sendBlock("Chain", 1, "test block deployed on the chain", "test block", "TEST");
+  sendBlock(
+    "Chain",
+    1,
+    "test block deployed on the chain",
+    "test block",
+    "TEST"
+  );
   res.send("Block deployed");
 });
 app.get("/getValidation", async (req, res) => {
